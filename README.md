@@ -51,4 +51,7 @@ Estruturas condicionais (if obj.type == "MESH", if node.type == "TEX_IMAGE")
 
 Criação dinâmica de objetos (bpy.data.materials.new)
 
+
+Ps: Script Java faz em apenas 1 passo
+
 Organização de saída no console (print)
