@@ -1,0 +1,52 @@
+import bpy
+
+def export_textures_from_materials():
+    # Percorre todos os objetos do tipo MESH
+    for obj in bpy.data.objects:
+        if obj.type == "MESH":
+            print(f"Objeto: {obj.name}")
+            
+            # Para cada material atribuído à mesh
+            for material_slot in obj.material_slots:
+                material = material_slot.material
+                if material:
+                    print(f"  Material: {material.name}")
+                    
+                    # Verifica se o material tem uma árvore de nós
+                    if material.node_tree:
+                        for node in material.node_tree.nodes:
+                            # Encontrar os nós do tipo TEX_IMAGE
+                            if node.type == "TEX_IMAGE" and node.image:
+                                # Pega a imagem vinculada ao nó
+                                image = node.image
+                                print(f"    -> Imagem: {image.name}")
+                                
+                                # Agora podemos exportar a textura ou associar a um novo material
+                                # Exportando a imagem (você pode fazer ajustes conforme sua necessidade)
+                                image_path = bpy.path.abspath(image.filepath)  # Caminho absoluto da imagem
+                                print(f"    Exportando textura: {image_path}")
+                                
+                                # Aqui você pode adicionar o código para salvar ou exportar a textura
+
+                                # Agora criando um material simples com essa textura
+                                new_material = bpy.data.materials.new(name=f"Exported_Material_{material.name}")
+                                new_material.use_nodes = True
+                                bsdf = new_material.node_tree.nodes["Principled BSDF"]
+                                tex_image_node = new_material.node_tree.nodes.new("ShaderNodeTexImage")
+                                tex_image_node.image = image
+                                new_material.node_tree.links.new(bsdf.inputs["Base Color"], tex_image_node.outputs["Color"])
+
+                                # Atribui o novo material à mesh (se necessário)
+                                material_index = obj.material_slots.find(material.name)
+                                if material_index != -1:
+                                    obj.data.materials[material_index] = new_material
+                                    print(f"    Novo material criado e aplicado no slot {material_index}.")
+                    else:
+                        print("    (Sem nós encontrados)")
+        else:
+            print(f"  {obj.name} não é um objeto do tipo MESH.")
+
+    print("Exportação finalizada.")
+
+# Executa o script
+export_textures_from_materials()

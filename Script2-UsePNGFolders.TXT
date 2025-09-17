@@ -1,0 +1,31 @@
+import bpy
+import os
+
+def replace_textures_with_converted(output_directory):
+    for material in bpy.data.materials:
+        if not material.use_nodes:
+            continue
+
+        # Verifica os nós do material
+        for node in material.node_tree.nodes:
+            if node.type == 'TEX_IMAGE' and node.image:
+                original_name = node.image.name
+                # Caminho para a textura PNG correspondente
+                converted_texture_path = os.path.join(output_directory, f"{original_name}.png")
+
+                if os.path.exists(converted_texture_path):
+                    try:
+                        # Cria uma nova imagem no Blender com a textura PNG
+                        new_image = bpy.data.images.load(converted_texture_path)
+                        node.image = new_image
+                        print(f"Textura substituída: {original_name} -> {converted_texture_path}")
+                    except Exception as e:
+                        print(f"Erro ao carregar a textura {converted_texture_path}: {e}")
+                else:
+                    print(f"Textura convertida não encontrada: {converted_texture_path}")
+
+# Diretório onde as texturas PNG foram salvas
+output_dir = r"D:\ROOM\Extract3\Konoha-sd70b\Texture"
+
+# Substitui as texturas nos materiais
+replace_textures_with_converted(output_dir)

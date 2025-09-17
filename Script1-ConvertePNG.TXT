@@ -1,0 +1,32 @@
+import bpy
+import os
+
+def save_xps_textures_as_png(output_directory):
+    # Certifique-se de que o diretório de saída existe
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    # Itera por todas as imagens carregadas no projeto
+    for image in bpy.data.images:
+        if image.is_dirty or not image.filepath:
+            # Define o nome do arquivo PNG
+            image_name = image.name
+            if not image_name.lower().endswith(".png"):
+                image_name = os.path.splitext(image.name)[0] + ".png"
+            
+            output_filepath = os.path.join(output_directory, image_name)
+
+            try:
+                # Salva a textura como PNG no diretório definido
+                image.filepath_raw = output_filepath
+                image.file_format = 'PNG'
+                image.save()
+                print(f"Textura salva: {image.name} -> {output_filepath}")
+            except Exception as e:
+                print(f"Erro ao salvar textura {image.name}: {e}")
+
+# Configura o diretório de saída
+output_dir = r"D:\ROOM\Extract3\Konoha-sd70b\Texture"
+
+# Chama a função para salvar as texturas
+save_xps_textures_as_png(output_dir)
