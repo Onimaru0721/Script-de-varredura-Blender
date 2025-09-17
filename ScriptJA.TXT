@@ -1,0 +1,82 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
+public class TextureManager {
+
+    // Parte 1: Exportar arquivos para PNG (simulado)
+    public static void exportTextures(String inputDir, String outputDir) {
+        File inputFolder = new File(inputDir);
+        File outputFolder = new File(outputDir);
+        if (!outputFolder.exists()) {
+            outputFolder.mkdirs();
+        }
+
+        for (File file : inputFolder.listFiles()) {
+            if (file.isFile()) {
+                String fileName = file.getName();
+                if (!fileName.toLowerCase().endsWith(".png")) {
+                    fileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".png";
+                }
+                File dest = new File(outputFolder, fileName);
+                try {
+                    Files.copy(file.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("Exported: " + file.getName() + " -> " + dest.getPath());
+                } catch (IOException e) {
+                    System.out.println("Error exporting: " + file.getName() + " -> " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    // Parte 2: Substituir arquivos antigos pelos convertidos
+    public static void replaceTextures(String sourceDir, String targetDir) {
+        File sourceFolder = new File(sourceDir);
+        File targetFolder = new File(targetDir);
+
+        for (File targetFile : targetFolder.listFiles()) {
+            File sourceFile = new File(sourceFolder, targetFile.getName());
+            if (sourceFile.exists()) {
+                try {
+                    Files.copy(sourceFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("Replaced: " + targetFile.getName());
+                } catch (IOException e) {
+                    System.out.println("Error replacing: " + targetFile.getName() + " -> " + e.getMessage());
+                }
+            } else {
+                System.out.println("Source not found for: " + targetFile.getName());
+            }
+        }
+    }
+
+    // Parte 3: Listar arquivos e criar registros (simulando materiais novos)
+    public static void exportMaterials(String folderPath) {
+        File folder = new File(folderPath);
+
+        for (File file : folder.listFiles()) {
+            if (file.isFile()) {
+                String materialName = "Material_" + file.getName();
+                System.out.println("Found texture: " + file.getName());
+                System.out.println("Creating material: " + materialName);
+                // Aqui você poderia criar arquivos de registro ou logs, se quiser
+            }
+        }
+
+        System.out.println("Material export finished.");
+    }
+
+    public static void main(String[] args) {
+        String inputDir = "C:\\Textures\\Input";
+        String outputDir = "C:\\Textures\\Output";
+
+        System.out.println("=== Export Textures ===");
+        exportTextures(inputDir, outputDir);
+
+        System.out.println("\n=== Replace Textures ===");
+        replaceTextures(inputDir, outputDir);
+
+        System.out.println("\n=== Export Materials ===");
+        exportMaterials(outputDir);
+    }
+}
